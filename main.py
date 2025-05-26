@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+from starlette.requests import empty_send
 
 app = FastAPI()
 
@@ -7,6 +8,19 @@ app = FastAPI()
 @app.get("/")
 def root():
     return {"hello world"}
+
+@app.post("/rendimiento")
+def rendimiento(valor_inicial: float, dias: float, rendimiento: float):
+    tasa_diaria = rendimiento / 100 / 365
+    valor_final = valor_inicial * (1 + tasa_diaria) ** dias
+    ganancia = valor_final - valor_inicial
+    return {
+        "valor_inicial": valor_inicial,
+        "valor_final": round(valor_final, 2),
+        "ganancia": round(ganancia, 2),
+        "dias": dias,
+        "rendimiento_anual": rendimiento
+    }
 
 
 if __name__ == "__main__":
