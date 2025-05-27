@@ -1,6 +1,7 @@
 import uvicorn
-from fastapi import FastAPI
-from starlette.requests import empty_send
+from fastapi import FastAPI, UploadFile, File
+import pandas as pd
+from io import StringIO
 
 app = FastAPI()
 
@@ -21,6 +22,13 @@ def rendimiento(valor_inicial: float, dias: float, rendimiento: float):
         "dias": dias,
         "rendimiento_anual": rendimiento
     }
+
+@app.post("/csv")
+async def csv(file: UploadFile = File(...)):
+    contents = await file.read()
+    df = pd.read_csv(StringIO(contents.decode("utf-8")))
+    print(df.head())
+    return {"message": "CSV procesado correctamente", "columns": df.columns.tolist()}
 
 
 if __name__ == "__main__":
